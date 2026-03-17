@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Webcam Photo</title>
+    <style>
+        #video {
+            width: 500px;
+            height: 400px;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <button id="btn-start-camera">Start Camera</button>
+    <video id="video" autoplay></video>
+    <button id="take-snapshot">Take Snapshop</button>
+    <div id="dataurl-container">
+        <canvas id="canvas" width="1000" height="500"></canvas>
+        <div id="daturl-header">Image Data URL</div>
+        <textarea id="dataurl" readonly></textarea>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let btn_start_camera = document.querySelector("#btn-start-camera");
+            let video = document.querySelector("#video");
+            let btn_take_snapshot = document.querySelector("#take-snapshot");
+            let canvas = document.querySelector("#canvas");
+            let dataurl = document.querySelector("#dataurl");
+            let dataurl_container = document.querySelector("#dataurl_container");
+
+            btn_start_camera.addEventListener('click', async function() {
+                let stream = null;
+
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+                } catch(error) {
+                    alert(error.message);
+                    return;
+                }
+
+                video.srcObject = stream;
+
+                video.style.display = 'block';
+                btn_start_camera.style.display = 'none';
+                btn_take_snapshot.style.display = 'block';
+            });
+
+            btn_take_snapshot.addEventListener('click', function() {
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                let image_data_url = canvas.toDataURL('image/jpeg');
+
+                dataurl.value = image_data_url;
+                dataurl_container.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
